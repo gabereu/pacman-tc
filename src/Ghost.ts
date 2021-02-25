@@ -16,6 +16,7 @@ class Ghost extends MovingObject implements DrawnableObject {
 
     private sprite_image = 0;
     private _state: GhostStates = 'stopped';
+    private afraid_timer?: number;
 
     constructor(private sprites: DirectionSprites, moving_object: MovingObjectProperties){
         super(moving_object);
@@ -42,6 +43,8 @@ class Ghost extends MovingObject implements DrawnableObject {
                 if(hasCorners){
                     this.chooseNewDirection();
                 }
+            } else {
+                this.chooseNewDirection();
             }
         }, 1000 / this.speed);
     }
@@ -98,9 +101,8 @@ class Ghost extends MovingObject implements DrawnableObject {
         }
 
         const actual_direction = this.direction;
-        const possible_directions = directions.filter(direction => {
+        const possible_directions = !this._canMove ? directions : directions.filter(direction => {
             if(
-                this._canMove &&
                 actual_direction === 'up' && direction === 'down' ||
                 actual_direction === 'down' && direction === 'up' ||
                 actual_direction === 'left' && direction === 'right' ||
@@ -118,13 +120,6 @@ class Ghost extends MovingObject implements DrawnableObject {
             if(changedDirection) return;
         }
 
-        // do{
-        //     const key = Math.floor(Math.random() * possible_directions.length);
-        //     const new_direction = possible_directions[key];
-
-        //     changedDirection = this.changeDirection(new_direction)
-        // }while(!changedDirection);
-        // console.log(changedDirection);
     }
 
     public set canMove(can: boolean){
@@ -135,14 +130,20 @@ class Ghost extends MovingObject implements DrawnableObject {
     }
 
     public set state(toState: GhostStates){
+        clearTimeout(this.afraid_timer);
         this._state = toState;
         switch (toState) {
             case 'moving':
-            case 'afraid':
                 this.move();
                 break;
             case 'stopped':
                 this.stop();
+                break;
+            case 'afraid':
+                this.move();
+                this.afraid_timer = setTimeout(() => {
+                    this.state = 'moving';
+                }, 7000);
                 break;
             default:
                 break;

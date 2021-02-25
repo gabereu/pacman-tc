@@ -30,6 +30,9 @@ class Point extends GameObject {
     public eat(){
         window.game.removeGameObject(this);
         window.game.addPoints(this._pointType === 'normal' ? 1 : 2);
+        if(this._pointType === 'big'){
+            window.game.triggerAfraid();
+        }
     }
 
     public get pointType(){
