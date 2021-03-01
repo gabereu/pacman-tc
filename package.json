@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "server": "http-server",
+    "server": "http-server ./public -c-1",
     "watch": "tsc -w"
   },
   "keywords": [],
