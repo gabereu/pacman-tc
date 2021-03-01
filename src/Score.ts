@@ -5,11 +5,9 @@ class Score implements DrawnableObject {
 
     public draw({context, canvas}: drawProperties){
         context.font = "30px Arial";
-        const score = String(this.score);
-        const text_size = context.measureText(score).width;
-        const x = canvas.width/2 ;
+        const x = 0;
         const y = canvas.height - 50;
-        context.fillText(score, x - text_size/2, y);
+        context.fillText(`Pontos: ${this.score}`, x, y);
     }
 
     public changeScore(score: number){

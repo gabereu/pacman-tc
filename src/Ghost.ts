@@ -19,12 +19,16 @@ class Ghost extends MovingObject implements DrawnableObject {
     private _state: GhostStates = 'stopped';
     private afraid_timer?: number;
 
-    constructor(private sprites: DirectionSprites, moving_object: MovingObjectProperties){
+    constructor(readonly name: string, private sprites: DirectionSprites, moving_object: MovingObjectProperties){
         super(moving_object);
     }
 
+    public get sprite() {
+        return this.sprites[this.direction][this.sprite_image];
+    }
+
     public draw({ context, tile_width, tile_height }: drawProperties){
-        const sprite = this.sprites[this.direction][this.sprite_image];
+        const sprite = this.sprite;
         // sprite.style.opacity = this.state === 'returning' ? '0.5' : '1';
         context.globalAlpha = this.state === 'returning' ? 0.5 : 1;
         const x = (this.position_x*tile_width)+(tile_width/2)-10;
@@ -150,9 +154,11 @@ class Ghost extends MovingObject implements DrawnableObject {
     } 
 
     public set state(toState: GhostStates){
+        if(this._state === 'returning' && toState === 'afraid'){
+            return;
+        }
         clearTimeout(this.afraid_timer);
         this._state = toState;
-        console.log(toState);
         switch (toState) {
             case 'moving':
             case 'returning':

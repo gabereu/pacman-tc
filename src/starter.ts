@@ -10,6 +10,7 @@ import Point from "./Point.js";
 import points from "./points.js";
 import Score from "./Score.js";
 import GameObject from "./GameObject.js";
+import States from "./States.js";
 
 window.onload = async () => {
     
@@ -28,7 +29,7 @@ window.onload = async () => {
         canvas,
         context,
         size: {
-            width: backgroundImage.width,
+            width: backgroundImage.width + 300,
             height: backgroundImage.height + 100,
         },
         tile_width,
@@ -68,6 +69,7 @@ window.onload = async () => {
     const sprite_ghost_red_right = await Util.loadAsyncImage('/images/ghost_red_right.png');
 
     const ghost = new Ghost(
+        'Blink',
         {
             left: [sprite_ghost_red_left],
             right: [sprite_ghost_red_right],
@@ -103,6 +105,9 @@ window.onload = async () => {
 
     (window as any).pacman = pacman;
     (window as any).ghost = ghost;
+
+    const states = new States([ghost], backgroundImage.width + 5);
+    layer.includeDrawnableObject(states);
 
 
     window.addEventListener('keydown', (keyboardEvent) => {
