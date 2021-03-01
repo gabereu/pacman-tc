@@ -8,6 +8,8 @@ import Game from "./Game.js";
 import Background from "./BackGround.js";
 import Point from "./Point.js";
 import points from "./points.js";
+import Score from "./Score.js";
+import GameObject from "./GameObject.js";
 
 window.onload = async () => {
     
@@ -27,32 +29,21 @@ window.onload = async () => {
         context,
         size: {
             width: backgroundImage.width,
-            height: backgroundImage.height,
+            height: backgroundImage.height + 100,
         },
         tile_width,
         tile_height,
     });
     layer.includeDrawnableObject(background);
     layer.startRender();
-
+    
     // const paths = new Paths(lines, columns, tile_height, tile_width, existing_paths);
     // layer.includeDrawnableObject(paths);
-
-    const game = new Game(layer);
+    
+    const score = new Score();
+    const gameObjects: GameObject[] = []
+    const game = new Game(layer, score);
     window.game = game;
-
-    const pointBigSprite = await Util.loadAsyncImage('/images/point_big.png');
-    const poinSprite = await Util.loadAsyncImage('/images/point.png');
-
-    points.forEach(pointInfo => {
-        const point = new Point({
-            pointType: pointInfo.type,
-            position_x: pointInfo.x,
-            position_y: pointInfo.y,
-            sprite: pointInfo.type === 'normal'? poinSprite : pointBigSprite,
-        });
-        game.includeGameObject(point);
-    });
 
     const spriteLeft = await Util.loadAsyncImage('/images/pac-man-left.png');
     const spriteRight = await Util.loadAsyncImage('/images/pac-man-right.png');
@@ -89,8 +80,26 @@ window.onload = async () => {
         }
     );
 
-    game.includeGameObject(pacman);
-    game.includeGameObject(ghost);
+    gameObjects.push(pacman);
+    gameObjects.push(ghost);
+
+    const pointBigSprite = await Util.loadAsyncImage('/images/point_big.png');
+    const poinSprite = await Util.loadAsyncImage('/images/point.png');
+
+    points.forEach(pointInfo => {
+        const point = new Point({
+            pointType: pointInfo.type,
+            position_x: pointInfo.x,
+            position_y: pointInfo.y,
+            sprite: pointInfo.type === 'normal'? poinSprite : pointBigSprite,
+        });
+        // game.includeGameObject(point);
+        gameObjects.push(point);
+    });
+
+    // console.log(gameObjects)
+
+    game.setInitalObjects(gameObjects);
 
     (window as any).pacman = pacman;
     (window as any).ghost = ghost;

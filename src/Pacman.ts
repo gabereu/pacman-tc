@@ -1,4 +1,6 @@
 import DrawnableObject, { drawProperties } from "./DrawnableObject.js";
+import { objectTypes } from "./GameObject.js";
+import Ghost from "./Ghost.js";
 import MovingObject, { MovingObjectProperties } from "./MovingObject.js";
 import Point from "./Point.js";
 
@@ -15,10 +17,6 @@ class Pacman extends MovingObject implements DrawnableObject {
 
     constructor(private sprites: DirectionSprites, moving_object: MovingObjectProperties){
         super(moving_object);
-        this.onMove = () => {
-            const point = window.game.objectExists<Point>(this.x, this.y, 'Point');
-            point?.eat();
-        }
     }
 
     public draw({ context, tile_width, tile_height }: drawProperties){
@@ -28,7 +26,7 @@ class Pacman extends MovingObject implements DrawnableObject {
         context.drawImage(sprite, x, y, 20, 20);
     }
 
-    public get type() {
+    public get type(): objectTypes {
         return 'Pacman';
     }
 }

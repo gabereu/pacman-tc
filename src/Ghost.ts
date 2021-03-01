@@ -1,5 +1,6 @@
 import DrawnableObject, { drawProperties } from "./DrawnableObject.js";
 import { GameEvent } from "./Game.js";
+import { objectTypes } from "./GameObject.js";
 import MovingObject, { MovingObjectProperties, directions, direction } from "./MovingObject.js";
 import Util from "./Util.js";
 
@@ -24,9 +25,12 @@ class Ghost extends MovingObject implements DrawnableObject {
 
     public draw({ context, tile_width, tile_height }: drawProperties){
         const sprite = this.sprites[this.direction][this.sprite_image];
+        // sprite.style.opacity = this.state === 'returning' ? '0.5' : '1';
+        context.globalAlpha = this.state === 'returning' ? 0.5 : 1;
         const x = (this.position_x*tile_width)+(tile_width/2)-10;
         const y = (this.position_y*tile_height)+(tile_height/2)-10;
         context.drawImage(sprite, x, y, 20, 20);
+        context.globalAlpha = 1;
     }
 
     public move(){
@@ -34,13 +38,13 @@ class Ghost extends MovingObject implements DrawnableObject {
         this.chooseNewDirection();
         this.move_timer = setInterval(() => {
             if(this._canMove){
-                const [position_x, position_y] = this.calculateNewPosition();
+                const [position_x, position_y] = this.calculateNewPosition(this._state === 'returning');
 
                 this.position_x = position_x;
                 this.position_y = position_y;
                 const hasCorners = this.checkCorners();
                 
-                if(hasCorners){
+                if(hasCorners || this._state === 'returning'){
                     this.chooseNewDirection();
                 }
             } else {
@@ -98,6 +102,18 @@ class Ghost extends MovingObject implements DrawnableObject {
                 changedDirection = this.changeDirection(direction);
                 if(changedDirection) return;
             }
+        } else if (this._state === 'returning') {
+            const x_difference = this.start_x - this.position_x;
+            const y_difference = this.start_y - this.position_y;
+            if(x_difference !== 0) {
+                this.changeDirection(x_difference > 0 ? 'right' : 'left', true);
+            } else if (y_difference != 0) {
+                this.changeDirection(y_difference > 0 ? 'down' : 'up', true);
+            } else {
+                this.state = 'moving';
+            }
+
+            return;
         }
 
         const actual_direction = this.direction;
@@ -129,11 +145,17 @@ class Ghost extends MovingObject implements DrawnableObject {
         }
     }
 
+    public get state() {
+        return this._state;
+    } 
+
     public set state(toState: GhostStates){
         clearTimeout(this.afraid_timer);
         this._state = toState;
+        console.log(toState);
         switch (toState) {
             case 'moving':
+            case 'returning':
                 this.move();
                 break;
             case 'stopped':
@@ -145,15 +167,20 @@ class Ghost extends MovingObject implements DrawnableObject {
                     this.state = 'moving';
                 }, 7000);
                 break;
+            case 'eaten':
+                this.stop();
+                this.state = 'returning';
+                break;
             default:
                 break;
         }
 
     }
 
-    public get type() {
+    public get type(): objectTypes {
         return 'Ghost';
     }
+
 
     public listenEnvent(event: GameEvent){
         console.log(event);

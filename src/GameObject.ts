@@ -1,15 +1,11 @@
-// export default interface GameObject {
-//     readonly x: number;
-//     readonly y: number;
-//     readonly type: string;
-// }
-
 import DrawnableObject, { drawProperties } from "./DrawnableObject.js";
 
 export interface GameObjectProperties {
     position_x: number;
     position_y: number;
 }
+
+export type objectTypes = 'Pacman' | 'Ghost' | 'Point' | 'Object';
 
 class GameObject implements DrawnableObject {
     protected position_x: number;
@@ -30,8 +26,8 @@ class GameObject implements DrawnableObject {
         return this.position_y;
     }
 
-    public get type() {
-        return 'GameObject';
+    public get type(): objectTypes {
+        return 'Object';
     }
 }
 

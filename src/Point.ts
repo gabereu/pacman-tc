@@ -1,5 +1,5 @@
 import { drawProperties } from "./DrawnableObject.js";
-import GameObject, { GameObjectProperties } from "./GameObject.js";
+import GameObject, { GameObjectProperties, objectTypes } from "./GameObject.js";
 
 type PointType = 'normal' | 'big';
 
@@ -39,7 +39,7 @@ class Point extends GameObject {
         return this._pointType;
     }
 
-    public get type() {
+    public get type(): objectTypes {
         return 'Point';
     }
 

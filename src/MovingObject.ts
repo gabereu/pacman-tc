@@ -1,4 +1,4 @@
-import GameObject, { GameObjectProperties } from "./GameObject.js";
+import GameObject, { GameObjectProperties, objectTypes } from "./GameObject.js";
 
 export interface MovingObjectProperties extends GameObjectProperties {
     paths: number[][];
@@ -19,12 +19,16 @@ class MovingObject extends GameObject {
     protected speed = 3;
     protected onMove?: () => void;
     protected paths: number[][];
+    protected start_x: number;
+    protected start_y: number;
 
     constructor({paths, position_x, position_y}: MovingObjectProperties) {
         super({
             position_x,
             position_y
         });
+        this.start_x = position_x;
+        this.start_y = position_y;
         this.paths = paths;
     }
 
@@ -36,6 +40,7 @@ class MovingObject extends GameObject {
             this.position_x = position_x;
             this.position_y = position_y;
             this.onMove?.call(this);
+            this.checkUnderOff();
         }, 1000 / this.speed);
     }
 
@@ -43,7 +48,7 @@ class MovingObject extends GameObject {
         clearInterval(this.move_timer);
     }
 
-    protected calculateNewPosition(): [number, number] {
+    protected calculateNewPosition(ignoreWalls = false): [number, number] {
         const position_x = this.position_x;
         const position_y = this.position_y;
         const direction = this.direction;
@@ -57,7 +62,7 @@ class MovingObject extends GameObject {
             case 'down':
             {
                 const new_position_y = position_y + direction_signal;
-                if(this.paths[new_position_y][position_x]){
+                if(this.paths[new_position_y][position_x] || ignoreWalls){
                     this.canMove = true;
                     return [position_x, new_position_y]
                 }
@@ -68,7 +73,7 @@ class MovingObject extends GameObject {
             case 'right':
             {
                 const new_position_x = position_x + direction_signal;
-                if(this.paths[position_y][new_position_x]){
+                if(this.paths[position_y][new_position_x] || ignoreWalls){
                     this.canMove = true;
                     return [new_position_x, position_y]
                 }
@@ -79,7 +84,7 @@ class MovingObject extends GameObject {
 
     }
 
-    public changeDirection(direction: direction){
+    public changeDirection(direction: direction, ignoreWalls = false){
         const actual_path_x = this.position_x;
         const actual_path_y = this.position_y;
 
@@ -105,13 +110,22 @@ class MovingObject extends GameObject {
                 break;
         }
 
-        if(this.paths[updated_path_y][updated_path_x]){
+        if(this.paths[updated_path_y][updated_path_x] || ignoreWalls){
             this.canMove = true;
             this.direction = direction;
             return true;
         }
 
         return false;
+    }
+
+    protected checkUnderOff(){
+        const objects = window.game.objectsInPosition(this.x, this.y);
+        for (const object of objects) {
+            if(this === object) continue;
+
+            window.game.colisionOf(this, object);
+        }
     }
 
     protected positonfree(x: number, y: number){
@@ -126,16 +140,9 @@ class MovingObject extends GameObject {
         this._canMove = can;
     }
 
-    // public get x() {
-    //     return this.position_x;
-    // }
-
-    // public get y() {
-    //     return this.position_y;
-    // }
-
-    public get type() {
-        return 'MovingObject';
+    public reloadStartPoint(){
+        this.position_x = this.start_x;
+        this.position_y = this.start_y;
     }
 }
 
