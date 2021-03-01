@@ -19,7 +19,7 @@ class Ghost extends MovingObject implements DrawnableObject {
     private _state: GhostStates = 'stopped';
     private afraid_timer?: number;
 
-    constructor(readonly name: string, private sprites: DirectionSprites, moving_object: MovingObjectProperties){
+    constructor(private sprites: DirectionSprites, moving_object: MovingObjectProperties){
         super(moving_object);
     }
 
@@ -190,6 +190,22 @@ class Ghost extends MovingObject implements DrawnableObject {
 
     public listenEnvent(event: GameEvent){
         console.log(event);
+    }
+
+    public static async loadSpirites(ghost: string){
+        const sprites = await Promise.all([
+            Util.loadAsyncImage(`/images/ghost_${ghost}_up.png`),
+            Util.loadAsyncImage(`/images/ghost_${ghost}_down.png`),
+            Util.loadAsyncImage(`/images/ghost_${ghost}_left.png`),
+            Util.loadAsyncImage(`/images/ghost_${ghost}_right.png`),
+        ]);
+
+        return {
+            up: [sprites[0]],
+            down: [sprites[1]],
+            left: [sprites[2]],
+            right: [sprites[3]],
+        };
     }
 }
 

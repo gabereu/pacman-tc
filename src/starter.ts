@@ -63,27 +63,58 @@ window.onload = async () => {
         position_y: 27,
     });
 
-    const sprite_ghost_red_up = await Util.loadAsyncImage('/images/ghost_red_up.png');
-    const sprite_ghost_red_down = await Util.loadAsyncImage('/images/ghost_red_down.png');
-    const sprite_ghost_red_left = await Util.loadAsyncImage('/images/ghost_red_left.png');
-    const sprite_ghost_red_right = await Util.loadAsyncImage('/images/ghost_red_right.png');
+    const red_ghost_sprites = await Ghost.loadSpirites('red');
 
-    const ghost = new Ghost(
-        'Blink',
+    const red_ghost = new Ghost(
+        red_ghost_sprites,
         {
-            left: [sprite_ghost_red_left],
-            right: [sprite_ghost_red_right],
-            up: [sprite_ghost_red_up],
-            down: [sprite_ghost_red_down],
-        }, {
             paths: existing_paths,
             position_x: 22,
             position_y: 23,
-        }
+        },
+    );
+
+    const light_blue_ghost_sprites = await Ghost.loadSpirites('light_blue');
+
+    const light_blue_ghost = new Ghost(
+        light_blue_ghost_sprites,
+        {
+            paths: existing_paths,
+            position_x: 23,
+            position_y: 23,
+        },
+    );
+
+    const pink_ghost_sprites = await Ghost.loadSpirites('pink');
+
+    const pink_ghost = new Ghost(
+        pink_ghost_sprites,
+        {
+            paths: existing_paths,
+            position_x: 21,
+            position_y: 23,
+        },
+    );
+
+    const orange_ghost_sprites = await Ghost.loadSpirites('orange');
+
+    const orange_ghost = new Ghost(
+        orange_ghost_sprites,
+        {
+            paths: existing_paths,
+            position_x: 20,
+            position_y: 23,
+        },
     );
 
     gameObjects.push(pacman);
-    gameObjects.push(ghost);
+    gameObjects.push(red_ghost);
+    gameObjects.push(light_blue_ghost);
+    gameObjects.push(pink_ghost);
+    gameObjects.push(orange_ghost);
+
+    const states = new States([red_ghost, light_blue_ghost, pink_ghost, orange_ghost], backgroundImage.width + 5);
+    layer.includeDrawnableObject(states);
 
     const pointBigSprite = await Util.loadAsyncImage('/images/point_big.png');
     const poinSprite = await Util.loadAsyncImage('/images/point.png');
@@ -104,11 +135,7 @@ window.onload = async () => {
     game.setInitalObjects(gameObjects);
 
     (window as any).pacman = pacman;
-    (window as any).ghost = ghost;
-
-    const states = new States([ghost], backgroundImage.width + 5);
-    layer.includeDrawnableObject(states);
-
+    (window as any).ghost = red_ghost;
 
     window.addEventListener('keydown', (keyboardEvent) => {
         const key = keyboardEvent.key;
@@ -135,6 +162,23 @@ window.onload = async () => {
         }
 
     });
+
+    const start_stop_button = document.querySelector<HTMLButtonElement>('#start_stop_button');
+    if(!start_stop_button){
+        throw new Error('Can not find start_stop_button');
+    }
+
+    start_stop_button.innerHTML = 'Começar'
+    start_stop_button.addEventListener('click', function () {
+        if(this.innerHTML === 'Começar'){
+            this.innerHTML = 'Voltar do inicio';
+            game.start()
+        } else {
+            this.innerHTML = 'Começar';
+            game.reset()
+        }
+    })
+
 
         // let mouse_using = false;
     // let newPoints: Point[] = [];

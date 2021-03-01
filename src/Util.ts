@@ -11,13 +11,14 @@ class Util {
 
     public static createCanvas(): [HTMLCanvasElement, CanvasRenderingContext2D] {
         const canvas = document.createElement('canvas');
-        document.body.append(canvas);
-
         const context = canvas.getContext('2d');
+        const container = document.querySelector('#canvas_container');
 
-        if(!context) {
-            throw new Error('Can not get contex')
+        if(!context || !container) {
+            throw new Error('Can not get contex or container');
         }
+        
+        container.append(canvas);
 
         return [ canvas, context ]
     }
