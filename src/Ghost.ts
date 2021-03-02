@@ -9,6 +9,7 @@ type DirectionSprites = {
     down: HTMLImageElement[];
     left: HTMLImageElement[];
     right: HTMLImageElement[];
+    afraid: [HTMLImageElement, HTMLImageElement];
 }
 
 type GhostStates =  'stopped' | 'moving' | 'afraid' | 'eaten' | 'returning';
@@ -18,18 +19,21 @@ class Ghost extends MovingObject implements DrawnableObject {
     private sprite_image = 0;
     private _state: GhostStates = 'stopped';
     private afraid_timer?: number;
+    private afraid_change_sprite_timer?: number;
 
     constructor(private sprites: DirectionSprites, moving_object: MovingObjectProperties){
         super(moving_object);
     }
 
     public get sprite() {
+        if(this._state === 'afraid'){
+            return this.sprites['afraid'][this.sprite_image];
+        }
         return this.sprites[this.direction][this.sprite_image];
     }
 
     public draw({ context, tile_width, tile_height }: drawProperties){
         const sprite = this.sprite;
-        // sprite.style.opacity = this.state === 'returning' ? '0.5' : '1';
         context.globalAlpha = this.state === 'returning' ? 0.5 : 1;
         const x = (this.position_x*tile_width)+(tile_width/2)-10;
         const y = (this.position_y*tile_height)+(tile_height/2)-10;
@@ -158,6 +162,7 @@ class Ghost extends MovingObject implements DrawnableObject {
             return;
         }
         clearTimeout(this.afraid_timer);
+        clearTimeout(this.afraid_change_sprite_timer);
         this._state = toState;
         switch (toState) {
             case 'moving':
@@ -169,8 +174,12 @@ class Ghost extends MovingObject implements DrawnableObject {
                 break;
             case 'afraid':
                 this.move();
+                this.afraid_change_sprite_timer = setTimeout(() => {
+                    this.sprite_image = 1;
+                }, 6000);
                 this.afraid_timer = setTimeout(() => {
                     this.state = 'moving';
+                    this.sprite_image = 0;
                 }, 7000);
                 break;
             case 'eaten':
@@ -192,7 +201,7 @@ class Ghost extends MovingObject implements DrawnableObject {
         console.log(event);
     }
 
-    public static async loadSpirites(ghost: string){
+    public static async loadSprites(ghost: string){
         const sprites = await Promise.all([
             Util.loadAsyncImage(`/images/ghost_${ghost}_up.png`),
             Util.loadAsyncImage(`/images/ghost_${ghost}_down.png`),

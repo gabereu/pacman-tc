@@ -1,8 +1,7 @@
 import DrawnableObject, { drawProperties } from "./DrawnableObject.js";
 import { objectTypes } from "./GameObject.js";
-import Ghost from "./Ghost.js";
 import MovingObject, { MovingObjectProperties } from "./MovingObject.js";
-import Point from "./Point.js";
+import Util from "./Util.js";
 
 type DirectionSprites = {
     up: HTMLImageElement[];
@@ -14,6 +13,7 @@ type DirectionSprites = {
 class Pacman extends MovingObject implements DrawnableObject {
 
     private sprite_image = 0;
+    private speed_timer?: number;
 
     constructor(private sprites: DirectionSprites, moving_object: MovingObjectProperties){
         super(moving_object);
@@ -28,6 +28,31 @@ class Pacman extends MovingObject implements DrawnableObject {
 
     public get type(): objectTypes {
         return 'Pacman';
+    }
+
+    public static async loadSpirites(){
+        const sprites = await Promise.all([
+            Util.loadAsyncImage(`/images/pac-man-up.png`),
+            Util.loadAsyncImage(`/images/pac-man-down.png`),
+            Util.loadAsyncImage(`/images/pac-man-left.png`),
+            Util.loadAsyncImage(`/images/pac-man-right.png`),
+        ]);
+
+        return {
+            up: [sprites[0]],
+            down: [sprites[1]],
+            left: [sprites[2]],
+            right: [sprites[3]],
+        };
+    }
+
+    public run(){
+        clearTimeout(this.speed_timer);
+        const speed = this.speed;
+        this.speed = speed * 3;
+        this.speed_timer = setTimeout(() => {
+            this.speed = speed;
+        }, 10000);
     }
 }
 

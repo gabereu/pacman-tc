@@ -86,6 +86,8 @@ class Game {
         for (const object of this.objects) {
             if(object.type === 'Ghost'){
                 (object as Ghost).state = 'afraid';
+            }else if(object.type === 'Pacman'){
+                (object as Pacman).run();
             }
         }
     }
@@ -106,8 +108,6 @@ class Game {
                 ghost = top_object as Ghost;
             }
 
-            console.log(top_object.type);
-            console.log(bottom_object.type);
             if(!pacman || !ghost){
                 return;
             }
@@ -116,7 +116,7 @@ class Game {
                 ghost.state = 'eaten';
                 this.addPoints(10);
             } else {
-                this.reset();
+                this.reset(true);
             }
         }
     }
@@ -131,7 +131,7 @@ class Game {
         }
     }
 
-    public reset(){
+    public reset(startAfter = false){
         this.score.changeScore(0);
         const objects = Array.from(this.objects);
         objects.forEach(object => {
@@ -148,6 +148,11 @@ class Game {
             this.removeGameObject(object);
         });
         this.inital_objects.forEach(this.includeGameObject.bind(this));
+        if(startAfter){
+            setTimeout(() => {
+                this.start();
+            }, 1000);
+        }
     }
 
 };
