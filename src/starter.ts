@@ -14,7 +14,42 @@ import States from "./States.js";
 
 window.onload = async () => {
     
-    const backgroundImage = await Util.loadAsyncImage('/images/map.png');
+    // const backgroundImage = await Util.loadAsyncImage('/images/map.png');
+
+    // const pacmanSpriteLeft = await Util.loadAsyncImage('/images/pac-man-left.png');
+    // const PacmanSpriteRight = await Util.loadAsyncImage('/images/pac-man-right.png');
+    // const PacmanSpriteUp = await Util.loadAsyncImage('/images/pac-man-up.png');
+    // const PacmanSpriteDown = await Util.loadAsyncImage('/images/pac-man-down.png');
+
+    // const red_ghost_sprites = await Ghost.loadSpirites('red');
+    // const light_blue_ghost_sprites = await Ghost.loadSpirites('light_blue');
+    // const pink_ghost_sprites = await Ghost.loadSpirites('pink');
+    // const orange_ghost_sprites = await Ghost.loadSpirites('orange');
+
+    const all_images_promise = Promise.all([
+        Util.loadAsyncImage('/images/map.png'),
+        Util.loadAsyncImage('/images/pac-man-left.png'),
+        Util.loadAsyncImage('/images/pac-man-right.png'),
+        Util.loadAsyncImage('/images/pac-man-up.png'),
+        Util.loadAsyncImage('/images/pac-man-down.png'),
+        Ghost.loadSpirites('red'),
+        Ghost.loadSpirites('light_blue'),
+        Ghost.loadSpirites('pink'),
+        Ghost.loadSpirites('orange'),
+    ]);
+
+    const [
+        backgroundImage,
+        pacmanSpriteLeft,
+        PacmanSpriteRight,
+        PacmanSpriteUp,
+        PacmanSpriteDown,
+        red_ghost_sprites,
+        light_blue_ghost_sprites,
+        pink_ghost_sprites,
+        orange_ghost_sprites,
+    ] = await all_images_promise;
+
     const background = new Background(backgroundImage);
     
     const lines = existing_paths.length;
@@ -46,24 +81,20 @@ window.onload = async () => {
     const game = new Game(layer, score);
     window.game = game;
 
-    const spriteLeft = await Util.loadAsyncImage('/images/pac-man-left.png');
-    const spriteRight = await Util.loadAsyncImage('/images/pac-man-right.png');
-    const spriteUp = await Util.loadAsyncImage('/images/pac-man-up.png');
-    const spriteDown = await Util.loadAsyncImage('/images/pac-man-down.png');
+    
 
     const pacman = new Pacman(
         {
-            left: [spriteLeft],
-            right: [spriteRight],
-            up: [spriteUp],
-            down: [spriteDown],
+            left: [pacmanSpriteLeft],
+            right: [PacmanSpriteRight],
+            up: [PacmanSpriteUp],
+            down: [PacmanSpriteDown],
         }, {
         paths: existing_paths,
         position_x: 22,
         position_y: 27,
     });
 
-    const red_ghost_sprites = await Ghost.loadSpirites('red');
 
     const red_ghost = new Ghost(
         red_ghost_sprites,
@@ -74,7 +105,6 @@ window.onload = async () => {
         },
     );
 
-    const light_blue_ghost_sprites = await Ghost.loadSpirites('light_blue');
 
     const light_blue_ghost = new Ghost(
         light_blue_ghost_sprites,
@@ -85,8 +115,6 @@ window.onload = async () => {
         },
     );
 
-    const pink_ghost_sprites = await Ghost.loadSpirites('pink');
-
     const pink_ghost = new Ghost(
         pink_ghost_sprites,
         {
@@ -96,7 +124,7 @@ window.onload = async () => {
         },
     );
 
-    const orange_ghost_sprites = await Ghost.loadSpirites('orange');
+    
 
     const orange_ghost = new Ghost(
         orange_ghost_sprites,
