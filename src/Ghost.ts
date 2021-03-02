@@ -163,6 +163,7 @@ class Ghost extends MovingObject implements DrawnableObject {
         }
         clearTimeout(this.afraid_timer);
         clearTimeout(this.afraid_change_sprite_timer);
+        this.sprite_image = 0;
         this._state = toState;
         switch (toState) {
             case 'moving':
@@ -179,7 +180,6 @@ class Ghost extends MovingObject implements DrawnableObject {
                 }, 6000);
                 this.afraid_timer = setTimeout(() => {
                     this.state = 'moving';
-                    this.sprite_image = 0;
                 }, 7000);
                 break;
             case 'eaten':
