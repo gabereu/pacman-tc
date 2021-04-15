@@ -1,7 +1,7 @@
 import Layer from "./Layer.js";
 import Pacman from "./Pacman.js";
 import Util from "./Util.js";
-import Paths from "./Paths.js";
+// import Paths from "./Paths.js";
 import existing_paths from './existing_paths.js';
 import Ghost from "./Ghost.js";
 import Game from "./Game.js";
@@ -48,13 +48,15 @@ window.onload = async () => {
     
     const [canvas, context] = Util.createCanvas();
     
+    const layerSize = {
+        width: backgroundImage.width + 300,
+        height: backgroundImage.height + 100,
+    };
+
     const layer = new Layer({
         canvas,
         context,
-        size: {
-            width: backgroundImage.width + 300,
-            height: backgroundImage.height + 100,
-        },
+        size: layerSize,
         tile_width,
         tile_height,
     });
@@ -181,6 +183,12 @@ window.onload = async () => {
         }
 
     });
+
+    const canvasContainer = document.querySelector<HTMLDivElement>('#canvas_container')
+    if(!canvasContainer){
+        throw new Error('Can not find canvas_container');
+    }
+    canvasContainer.style.height = `${layerSize.height}px`;
 
     const start_stop_button = document.querySelector<HTMLButtonElement>('#start_stop_button');
     if(!start_stop_button){
