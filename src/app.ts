@@ -178,8 +178,8 @@ window.onload = async () => {
         
         try {
             moves[key]();
+            keyboardEvent.preventDefault();
         } catch (error) {
-            
         }
 
     });
