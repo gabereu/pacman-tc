@@ -115,7 +115,7 @@ class Game {
             if(ghost.state === 'afraid'){
                 ghost.state = 'eaten';
                 this.addPoints(10);
-            } else {
+            } else if (ghost.state !== 'eaten' && ghost.state !== 'returning'){
                 this.reset(true);
             }
         }
