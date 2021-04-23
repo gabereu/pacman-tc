@@ -69,7 +69,7 @@ class Game {
     }
 
     public addPoints(points: number){
-        this.points += points;
+        this.points = this.points + points;
         // console.log(this.points);
     }
 
@@ -132,7 +132,7 @@ class Game {
     }
 
     public reset(startAfter = false){
-        this.score.changeScore(0);
+        this.points = 0;
         const objects = Array.from(this.objects);
         objects.forEach(object => {
             const object_type = object.type;
